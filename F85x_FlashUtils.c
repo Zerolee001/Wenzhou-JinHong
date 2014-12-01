@@ -61,7 +61,7 @@ void FLASH_Fill (FLADDR addr, ULONG length, UCHAR fill);
 // <addr> + <numbytes> must be less than the maximum flash address.
 //
 //-----------------------------------------------------------------------------
-void FLASH_Clear (FLADDR dest, unsigned numbytes)
+void FLASH_Clear (FLADDR dest, U16 numbytes)
 {
    FLADDR dest_1_page_start;           // First address in 1st page
                                        // containing <dest>
@@ -179,7 +179,7 @@ void FLASH_Clear (FLADDR dest, unsigned numbytes)
 // <dest> + <numbytes> must be less than the maximum flash address.
 //
 //-----------------------------------------------------------------------------
-void FLASH_Update (FLADDR dest, char *src, unsigned numbytes)
+void FLASH_Update (FLADDR dest, char *src, U16 numbytes)
 {
    // 1. Erase <numbytes> starting from <dest>
    FLASH_Clear (dest, numbytes);
@@ -208,7 +208,7 @@ void FLASH_Update (FLADDR dest, char *src, unsigned numbytes)
 // <dest> + <numbytes> must be less than the maximum flash address.
 //
 //-----------------------------------------------------------------------------
-void FLASH_Write (FLADDR dest, char *src, unsigned numbytes)
+void FLASH_Write (FLADDR dest, char *src, U16 numbytes)
 {
    FLADDR i;
 
@@ -237,7 +237,7 @@ void FLASH_Write (FLADDR dest, char *src, unsigned numbytes)
 // <src> + <numbytes> must be less than the maximum flash address.
 //
 //-----------------------------------------------------------------------------
-char * FLASH_Read (char *dest, FLADDR src, unsigned numbytes)
+char * FLASH_Read (char *dest, FLADDR src, U16 numbytes)
 {
    FLADDR i;
 

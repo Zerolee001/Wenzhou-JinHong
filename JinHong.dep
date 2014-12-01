@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<project>
+  <fileVersion>2</fileVersion>
+  <fileChecksum>1327718595</fileChecksum>
+  <configuration>
+    <name>Debug</name>
+    <outputs>
+      <file>$PROJ_DIR$\Mode.h</file>
+      <file>$PROJ_DIR$\KeyScan.h</file>
+      <file>$PROJ_DIR$\main.h</file>
+      <file>$PROJ_DIR$\LED.h</file>
+      <file>$PROJ_DIR$\Timer.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\main.r51</file>
+      <file>$PROJ_DIR$\Debug\Obj\JinHong.pbd</file>
+      <file>$PROJ_DIR$\main.c</file>
+      <file>$PROJ_DIR$\Debug\Obj\main.pbi</file>
+      <file>$PROJ_DIR$\Debug\Exe\JinHong.d51</file>
+      <file>$PROJ_DIR$\Mode.c</file>
+      <file>$PROJ_DIR$\Debug\Obj\Mode.r51</file>
+      <file>$PROJ_DIR$\Debug\Obj\Mode.pbi</file>
+      <file>$TOOLKIT_DIR$\lib\clib\cl-pli-nsic-1e16x01.r51</file>
+      <file>$PROJ_DIR$\F85x_FlashUtils.h</file>
+      <file>$PROJ_DIR$\TCM300.h</file>
+      <file>$PROJ_DIR$\Switch.h</file>
+      <file>$PROJ_DIR$\F85x_FlashPrimitives.h</file>
+      <file>$TOOLKIT_DIR$\inc\ioC8051F850.h</file>
+      <file>$TOOLKIT_DIR$\lib\clib\cl-pli-nsid-1e16x01.r51</file>
+      <file>$PROJ_DIR$\Debug\Obj\KeyScan.pbi</file>
+      <file>$TOOLKIT_DIR$\config\devices\Silicon Laboratories\lnk51ew_C8051F850.xcl</file>
+      <file>$PROJ_DIR$\KeyScan.c</file>
+      <file>$PROJ_DIR$\Debug\Obj\KeyScan.r51</file>
+      <file>$PROJ_DIR$\Debug\Obj\F85x_FlashUtils.r51</file>
+      <file>$TOOLKIT_DIR$\doc\infocenter\index.ENU.html</file>
+      <file>$PROJ_DIR$\Debug\Obj\F85x_FlashPrimitives.r51</file>
+      <file>$PROJ_DIR$\Timer.c</file>
+      <file>$PROJ_DIR$\Debug\Obj\LED.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\F85x_FlashUtils.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\F85x_FlashPrimitives.pbi</file>
+      <file>$PROJ_DIR$\LED.c</file>
+      <file>$PROJ_DIR$\Debug\Obj\LED.r51</file>
+      <file>$PROJ_DIR$\F85x_FlashPrimitives.c</file>
+      <file>$PROJ_DIR$\F85x_FlashUtils.c</file>
+      <file>$PROJ_DIR$\Debug\Obj\TCM300.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\Timer.r51</file>
+      <file>$PROJ_DIR$\Debug\Obj\TCM300.r51</file>
+      <file>$PROJ_DIR$\Debug\Obj\Timer.pbi</file>
+      <file>$PROJ_DIR$\TCM300.c</file>
+      <file>$PROJ_DIR$\Switch.c</file>
+      <file>$PROJ_DIR$\Debug\Obj\Switch.r51</file>
+      <file>$PROJ_DIR$\Debug\Obj\Switch.pbi</file>
+    </outputs>
+    <file>
+      <name>$PROJ_DIR$\main.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 8</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 18 2 3 4 1 0 15 16 14 17</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 18 2 3 4 1 0 15 16 14 17</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Debug\Exe\JinHong.d51</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 21 23 32 11 41 37 36 5 13</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>[ROOT_NODE]</name>
+      <outputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 9</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Mode.c</name>
+      <outputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 11</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 12</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 18 0</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 18 0</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\KeyScan.c</name>
+      <outputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 23</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 20</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 18 1</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 18 1</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Timer.c</name>
+      <outputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 36</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 38</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 18 4</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 18 4</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\LED.c</name>
+      <outputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 32</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 28</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 18 3</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 18 3</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\F85x_FlashPrimitives.c</name>
+      <outputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 26</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 30</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 18 17</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 18 17</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\F85x_FlashUtils.c</name>
+      <outputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 24</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 29</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 17 14 18</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 17 14 18</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\TCM300.c</name>
+      <outputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 37</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 35</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 18 15</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 18 15</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Switch.c</name>
+      <outputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 41</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 42</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC8051</name>
+          <file> 18</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 18</file>
+        </tool>
+      </inputs>
+    </file>
+    <forcedrebuild>
+      <name>[MULTI_TOOL]</name>
+      <tool>XLINK</tool>
+    </forcedrebuild>
+    <forcedrebuild>
+      <name>[REBUILD_ALL]</name>
+    </forcedrebuild>
+  </configuration>
+  <configuration>
+    <name>Release</name>
+    <outputs/>
+    <forcedrebuild>
+      <name>[MULTI_TOOL]</name>
+      <tool>XLINK</tool>
+    </forcedrebuild>
+  </configuration>
+</project>
+
+

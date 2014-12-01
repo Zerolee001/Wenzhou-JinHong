@@ -1,15 +1,8 @@
-/*
- * Switch.c
- *
- *  Created on: 2014-7-11
- *      Author: Lee
- */
+#include "ioC8051F850.h"
 
-#include <compiler_defs.h>
-#include <SI_C8051F850_Register_Enums.h>                // SFR declarations
+#define SWITCH1  P1_bit.P15
+#define SWITCH2  P2_bit.P21
 
-SBIT(SWITCH1, SFR_P1, 5);                   // P1.5 SWITCH1
-SBIT(SWITCH2, SFR_P2, 1);                   // P2.1 SWITCH2
 
 void Switch_Set_Switch(unsigned char Index, unsigned char Mode)
 {

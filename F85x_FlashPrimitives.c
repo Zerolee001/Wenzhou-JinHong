@@ -22,8 +22,7 @@
 //-----------------------------------------------------------------------------
 // Includes
 //-----------------------------------------------------------------------------
-
-#include <SI_C8051F850_Register_Enums.h>
+#include "ioC8051F850.h"
 #include "F85x_FlashPrimitives.h"
 
 //-----------------------------------------------------------------------------
@@ -51,16 +50,19 @@ void          FLASH_PageErase (FLADDR addr);
 //-----------------------------------------------------------------------------
 void FLASH_ByteWrite (FLADDR addr, char byte)
 {
-   bit EA_SAVE = IE_EA;                   // Preserve IE_EA
-   char xdata * data pwrite;           // Flash write pointer
+   char EA_SAVE = IE_bit.EA;//IE_EA;                   // Preserve IE_EA
+   //char xdata * data pwrite;           // Flash write pointer
+   char __xdata * pwrite;           // Flash write pointer
 
-   IE_EA = 0;                             // Disable interrupts
+   //IE_EA = 0;                             // Disable interrupts
+   IE_bit.EA = 0;
 
    VDM0CN = 0x80;                      // Enable VDD monitor
 
    RSTSRC = 0x02;                      // Enable VDD monitor as a reset source
 
-   pwrite = (char xdata *) addr;
+   //pwrite = (char xdata *) addr;
+   pwrite = (char __xdata *) addr;
 
    FLKEY  = 0xA5;                      // Key Sequence 1
    FLKEY  = 0xF1;                      // Key Sequence 2
@@ -73,7 +75,8 @@ void FLASH_ByteWrite (FLADDR addr, char byte)
 
    PSCTL &= ~0x01;                     // PSWE = 0 which disable writes
 
-   IE_EA = EA_SAVE;                       // Restore interrupts
+   //IE_EA = EA_SAVE;                       // Restore interrupts
+   IE_bit.EA = EA_SAVE;
 }
 
 //-----------------------------------------------------------------------------
@@ -93,18 +96,23 @@ void FLASH_ByteWrite (FLADDR addr, char byte)
 //-----------------------------------------------------------------------------
 U8 FLASH_ByteRead (FLADDR addr)
 {
-   bit EA_SAVE = IE_EA;                   // Preserve IE_EA
-   char code * data pread;             // Flash read pointer
+   char EA_SAVE =IE_bit.EA;//IE_EA;                   // Preserve IE_EA
+   //char code * data pread;             // Flash read pointer
+   char __code * pread;
+   
    U8 byte;
 
-   IE_EA = 0;                             // Disable interrupts
+   //IE_EA = 0;                             // Disable interrupts
+   IE_bit.EA = 0;
 
-   pread = (char code *) addr;
+   //pread = (char code *) addr;
+   pread = (char __code *) addr;
 
    byte = *pread;                      // Read the byte
 
-   IE_EA = EA_SAVE;                       // Restore interrupts
-
+   //IE_EA = EA_SAVE;                       // Restore interrupts
+   IE_bit.EA = EA_SAVE;
+   
    return byte;
 }
 
@@ -126,16 +134,19 @@ U8 FLASH_ByteRead (FLADDR addr)
 //-----------------------------------------------------------------------------
 void FLASH_PageErase (FLADDR addr)
 {
-   bit EA_SAVE = IE_EA;                   // Preserve IE_EA
-   char xdata * data pwrite;           // Flash write pointer
+   char EA_SAVE = IE_bit.EA;//IE_EA;                   // Preserve IE_EA
+   //char xdata * data pwrite;           // Flash write pointer
+   char __xdata * pwrite;
 
-   IE_EA = 0;                             // Disable interrupts
+   //IE_EA = 0;                             // Disable interrupts
+   IE_bit.EA = 0;
 
    VDM0CN = 0x80;                      // Enable VDD monitor
 
    RSTSRC = 0x02;                      // Enable VDD monitor as a reset source
 
-   pwrite = (char xdata *) addr;
+   //pwrite = (char xdata *) addr;
+   pwrite = (char __xdata *) addr;
 
    FLKEY  = 0xA5;                      // Key Sequence 1
    FLKEY  = 0xF1;                      // Key Sequence 2
@@ -148,7 +159,8 @@ void FLASH_PageErase (FLADDR addr)
 
    PSCTL &= ~0x03;                     // PSWE = 0; PSEE = 0
 
-   IE_EA = EA_SAVE;                       // Restore interrupts
+   //IE_EA = EA_SAVE;                       // Restore interrupts
+   IE_bit.EA = EA_SAVE;
 }
 
 //-----------------------------------------------------------------------------

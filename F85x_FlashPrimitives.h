@@ -30,11 +30,13 @@
 // Includes
 //-----------------------------------------------------------------------------
 
-#include <SI_C8051F850_Register_Enums.h>
-
 //-----------------------------------------------------------------------------
 // Structures, Unions, Enumerations, and Type Definitions
 //-----------------------------------------------------------------------------
+
+typedef unsigned long U32;
+typedef unsigned short  U16;
+typedef unsigned char U8;
 
 typedef U32 ULONG;
 typedef U16  UINT;

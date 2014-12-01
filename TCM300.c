@@ -1,15 +1,7 @@
-/*
- * TCM300.c
- *
- *  Created on: 2014-5-7
- *      Author: zero
- */
-
-#include <compiler_defs.h>
-#include <SI_C8051F850_Register_Enums.h>                // SFR declarations
+#include "ioC8051F850.h"
 #include "TCM300.h"
 
-SEG_CODE const unsigned char u8CRC8Table[256] = {
+const unsigned char u8CRC8Table[256] = {
   0x00, 0x07, 0x0e, 0x09, 0x1c, 0x1b, 0x12, 0x15,
   0x38, 0x3f, 0x36, 0x31, 0x24, 0x23, 0x2a, 0x2d,
   0x70, 0x77, 0x7e, 0x79, 0x6c, 0x6b, 0x62, 0x65,
@@ -41,8 +33,8 @@ SEG_CODE const unsigned char u8CRC8Table[256] = {
   0xae, 0xa9, 0xa0, 0xa7, 0xb2, 0xb5, 0xbc, 0xbb,
   0x96, 0x91, 0x98, 0x9f, 0x8a, 0x8D, 0x84, 0x83,
   0xde, 0xd9, 0xd0, 0xd7, 0xc2, 0xc5, 0xcc, 0xcb,
-  0xe6, 0xe1, 0xe8, 0xef, 0xfa, 0xfd, 0xf4, 0xf3
-  };
+  0xe6, 0xe1, 0xe8, 0xef, 0xfa, 0xfd, 0xf4, 0xf3,
+};
 
 #define proc_crc8(u8CRC, u8Data) (u8CRC8Table[u8CRC ^ u8Data])
 
@@ -70,195 +62,200 @@ unsigned char u8Index = 0;
 // Echo the Rx data
 //
 //-----------------------------------------------------------------------------
-INTERRUPT (UART0_ISR, UART0_IRQn)
+
+#pragma vector=0x23
+__interrupt void UART0_ISR(void)
 {
-	//CRC checksum calculation
-	static unsigned char u8CRC = 0;
-	//State machine
-	static unsigned char u8State = GET_SYNC_STATE;
-	//number of bytes received
-	static unsigned char u16Count = 0;
-	//Received Data
-	unsigned char u8RxByte;
-	unsigned char i;
-
-	//check for time out between two bytes
-
-
-	if(SCON0_RI == 1)
-	{
-		SCON0_RI = 0;                    // Clear interrupt flag
-		u8RxByte = SBUF0;                    // Read a character from UART
-
-		u8Index = u8State + 1;
-	    //state machine
-	    switch(u8State)
-	    {
-	    	case GET_SYNC_STATE:
-	    	{
-	            if(u8RxByte == SER_SYNCH_CODE)
-	            {
-	            	u8State = GET_HEADER_STATE;
-	            	u16Count = 0;
-	            	u8CRC = 0;
-	            }
-	            break;
-	    	}
-	    	case GET_HEADER_STATE:
-	    	{
-	    		MSG.u8Raw[u16Count++] = u8RxByte;
-	    		u8CRC = proc_crc8(u8CRC, u8RxByte);
-	    		// All header bytes received?
-	    		if(u16Count == SER_HEADER_NR_BYTES)
-	    		{
-	    			u8State = CHECK_CRC8H_STATE;
-	    		}
-	    		if(u16Count > SER_HEADER_NR_BYTES)
-	    		{
-	    			u8State = GET_SYNC_STATE;
-	    		    u16Count = 0;
-	    			u8CRC = 0;
-	    		}
-	    		break;
-	    	}
-	    	// Check header checksum & try to resynchonise if error happened
-	    	case CHECK_CRC8H_STATE:
-	    	{
-	    		// Header CRC correct?
-	    		if (u8CRC != u8RxByte)
-	    		{
-	    			// No. Check if there is a sync byte (0x55) in the header
-	    			int a = -1;
-	    			for (i = 0 ; i < SER_HEADER_NR_BYTES ; i++)
-	    			{
-	    				if (MSG.u8Raw[i] == SER_SYNCH_CODE)
-	    				{
-	    					// indicates the next position to the sync byte found
-	    					a=i+1;
-	    					break;
-	    				}
-	    			}
-	    			if ((a == -1) && (u8RxByte != SER_SYNCH_CODE))
-	    			{
-	    				// Header and CRC8H does not contain the sync code
-	    				u8State = GET_SYNC_STATE;
-	    				break;
-	    			}
-	    			else if((a == -1) && (u8RxByte == SER_SYNCH_CODE))
-	    			{
-	    				// Header does not have sync code but CRC8H does.
-	    				// The sync code could be the beginning of a packet
-	    				u8State = GET_HEADER_STATE;
-	    				u16Count = 0;
-	    				u8CRC   = 0;
-	    				break;
-	    			}
-
-	    			// Header has a sync byte. It could be a new telegram.
-	    			// Shift all bytes from the 0x55 code in the buffer.
-	    			// Recalculate CRC8 for those bytes
-	    			u8CRC = 0;
-	    			for (i = 0 ; i < (SER_HEADER_NR_BYTES - a) ; i++)
-	    			{
-	    			    MSG.u8Raw[i] = MSG.u8Raw[a+i];
-	    			    u8CRC = proc_crc8(u8CRC, MSG.u8Raw[i]);
-	    			}
-	    			u16Count = SER_HEADER_NR_BYTES - a;
-	    			// u16Count = i; // Seems also valid and more intuitive than u16Count -= a;
-
-	    			// Copy the just received byte to buffer
-	    			MSG.u8Raw[u16Count++] = u8RxByte;
-	    			u8CRC = proc_crc8(u8CRC, u8RxByte);
-
-	    			if(u16Count < SER_HEADER_NR_BYTES)
-	    			{
-	    			     u8State = GET_HEADER_STATE;
-	    			     break;
-	    			}
-	    			break;
-	    		}
-	    		// CRC8H correct. Length fields values valid?
-	    		if((MSG.pPacket.u16DataLength + MSG.pPacket.u8OptionLength) == 0)
-	    		{
-	    		     //No. Sync byte received?
-	    		     if((u8RxByte == SER_SYNCH_CODE))
-	    		     {
-	    		         //yes
-	    		         u8State = GET_HEADER_STATE;
-	    		         u16Count = 0;
-	    		         u8CRC   = 0;
-	    		         break;
-	    		     }
-
-	    		     // Packet with correct CRC8H but wrong length fields.
-	    		     u8State = GET_SYNC_STATE;
-	    		     return;
-	    		     //return OUT_OF_RANGE;
-	    		}
-
-	    		// Correct header CRC8. Go to the reception of data.
-	    	    u8State = GET_DATA_STATE;
-	    		u16Count = 0;
-	    		u8CRC   = 0;
-	    		break;
-	    	}
-	    	// Copy the information bytes
-	    	case GET_DATA_STATE:
-	    	{
-	    		// Copy byte in the packet buffer only if the received bytes have enough room
-	    		if(u16Count < BUFFER_LENGTH)
-	    		{
-	    		     MSG.pPacket.u8DataBuffer[u16Count] = u8RxByte;
-	    		     u8CRC = proc_crc8(u8CRC, u8RxByte);
-	    		}
-	    		// When all expected bytes received, go to calculate data checksum
-	    		if( ++u16Count == (MSG.pPacket.u16DataLength + MSG.pPacket.u8OptionLength) )
-	    		{
-	    		     u8State = CHECK_CRC8D_STATE;
-	    		}
-	    		break;
-	    	}
-	    	// Check the data CRC8
-	        case CHECK_CRC8D_STATE:
-	        {
-	        	// In all cases the state returns to the first state: waiting for next sync byte
-	        	u8State = GET_SYNC_STATE;
-
-	        	// Received packet bigger than space to allocate bytes?
-	        	if (u16Count > BUFFER_LENGTH)
-	        	{
-	        		 //return OUT_OF_RANGE;
-	        	}
-	        	// Enough space to allocate packet. Equals last byte the calculated CRC8?
-	        	if (u8CRC == u8RxByte)
-	        	{
-	        		//return OK;               // Correct packet received
-	        		u8MSGReceive = 1;
-	        	}
-	        	// False CRC8.
-	        	// If the received byte equals sync code, then it could be sync byte for next paquet.
-	        	if((u8RxByte == SER_SYNCH_CODE))
-	        	{
-	        	     u8State = GET_HEADER_STATE;
-	        	     u16Count = 0;
-	        	     u8CRC   = 0;
-	        	}
-	        	break;
-	        }
-	        default:
-	        {
-	        	//yes, go to the reception of information
-	        	u8State = GET_SYNC_STATE;
-	        	break;
-	        }
-	    }
-	}
-
-    if (SCON0_TI == 1)                        // Check if transmit flag is set
-	{
-	    SCON0_TI = 0;                          // Clear interrupt flag
-	      //SBUF0 = Byte;                 // Transmit to Hyperterminal
-	}
+    //CRC checksum calculation
+    static unsigned char u8CRC = 0;
+    //State machine
+    static unsigned char u8State = GET_SYNC_STATE;
+    //number of bytes received
+    static unsigned char u16Count = 0;
+    //Received Data
+    unsigned char u8RxByte;
+    unsigned char i;
+    
+    //if(SCON0_RI == 1)
+    if(SCON0_bit.RI0 == 1)
+    {
+        //SCON0_RI = 0;                    // Clear interrupt flag
+        SCON0_bit.RI0 = 0;
+        
+        //u8RxByte = SBUF0;                    // Read a character from UART
+        u8RxByte = SBUF0;
+        
+        u8Index = u8State + 1;
+        //state machine
+        switch(u8State)
+        {
+            case GET_SYNC_STATE:
+            {
+                if(u8RxByte == SER_SYNCH_CODE)
+                {
+                    u8State = GET_HEADER_STATE;
+                    u16Count = 0;
+                    u8CRC = 0;
+                }
+                break;
+            }
+            case GET_HEADER_STATE:
+            {
+                MSG.u8Raw[u16Count++] = u8RxByte;
+                u8CRC = proc_crc8(u8CRC, u8RxByte);
+                // All header bytes received?
+                if(u16Count == SER_HEADER_NR_BYTES)
+                {
+                    u8State = CHECK_CRC8H_STATE;
+                }
+                if(u16Count > SER_HEADER_NR_BYTES)
+                {
+                    u8State = GET_SYNC_STATE;
+                    u16Count = 0;
+                    u8CRC = 0;
+                }
+                break;
+            }
+            // Check header checksum & try to resynchonise if error happened
+            case CHECK_CRC8H_STATE:
+            {
+                // Header CRC correct?
+                if (u8CRC != u8RxByte)
+                {
+                    // No. Check if there is a sync byte (0x55) in the header
+                    int a = -1;
+                    for (i = 0 ; i < SER_HEADER_NR_BYTES ; i++)
+                    {
+                        if (MSG.u8Raw[i] == SER_SYNCH_CODE)
+                        {
+                            // indicates the next position to the sync byte found
+                            a=i+1;
+                            break;
+                        }
+                    }
+                    if ((a == -1) && (u8RxByte != SER_SYNCH_CODE))
+                    {
+                        // Header and CRC8H does not contain the sync code
+                        u8State = GET_SYNC_STATE;
+                        break;
+                    }
+                    else if((a == -1) && (u8RxByte == SER_SYNCH_CODE))
+                    {
+                        // Header does not have sync code but CRC8H does.
+                        // The sync code could be the beginning of a packet
+                        u8State = GET_HEADER_STATE;
+                        u16Count = 0;
+                        u8CRC   = 0;
+                        break;
+                    }
+                    
+                    // Header has a sync byte. It could be a new telegram.
+                    // Shift all bytes from the 0x55 code in the buffer.
+                    // Recalculate CRC8 for those bytes
+                    u8CRC = 0;
+                    for (i = 0 ; i < (SER_HEADER_NR_BYTES - a) ; i++)
+                    {
+                        MSG.u8Raw[i] = MSG.u8Raw[a+i];
+                        u8CRC = proc_crc8(u8CRC, MSG.u8Raw[i]);
+                    }
+                    u16Count = SER_HEADER_NR_BYTES - a;
+                    // u16Count = i; // Seems also valid and more intuitive than u16Count -= a;
+                    
+                    // Copy the just received byte to buffer
+                    MSG.u8Raw[u16Count++] = u8RxByte;
+                    u8CRC = proc_crc8(u8CRC, u8RxByte);
+                    
+                    if(u16Count < SER_HEADER_NR_BYTES)
+                    {
+                        u8State = GET_HEADER_STATE;
+                        break;
+                    }
+                    break;
+                }
+                // CRC8H correct. Length fields values valid?
+                if((MSG.pPacket.u16DataLength + MSG.pPacket.u8OptionLength) == 0)
+                {
+                    //No. Sync byte received?
+                    if((u8RxByte == SER_SYNCH_CODE))
+                    {
+                        //yes
+                        u8State = GET_HEADER_STATE;
+                        u16Count = 0;
+                        u8CRC   = 0;
+                        break;
+                    }
+                    
+                    // Packet with correct CRC8H but wrong length fields.
+                    u8State = GET_SYNC_STATE;
+                    return;
+                    //return OUT_OF_RANGE;
+                }
+                
+                // Correct header CRC8. Go to the reception of data.
+                u8State = GET_DATA_STATE;
+                u16Count = 0;
+                u8CRC   = 0;
+                break;
+            }
+            // Copy the information bytes
+            case GET_DATA_STATE:
+            {
+                // Copy byte in the packet buffer only if the received bytes have enough room
+                if(u16Count < BUFFER_LENGTH)
+                {
+                    MSG.pPacket.u8DataBuffer[u16Count] = u8RxByte;
+                    u8CRC = proc_crc8(u8CRC, u8RxByte);
+                }
+                // When all expected bytes received, go to calculate data checksum
+                if( ++u16Count == (MSG.pPacket.u16DataLength + MSG.pPacket.u8OptionLength) )
+                {
+                    u8State = CHECK_CRC8D_STATE;
+                }
+                break;
+            }
+            // Check the data CRC8
+            case CHECK_CRC8D_STATE:
+            {
+                // In all cases the state returns to the first state: waiting for next sync byte
+                u8State = GET_SYNC_STATE;
+                
+                // Received packet bigger than space to allocate bytes?
+                if (u16Count > BUFFER_LENGTH)
+                {
+                    //return OUT_OF_RANGE;
+                }
+                // Enough space to allocate packet. Equals last byte the calculated CRC8?
+                if (u8CRC == u8RxByte)
+                {
+                    //return OK;               // Correct packet received
+                    u8MSGReceive = 1;
+                }
+                // False CRC8.
+                // If the received byte equals sync code, then it could be sync byte for next paquet.
+                if((u8RxByte == SER_SYNCH_CODE))
+                {
+                    u8State = GET_HEADER_STATE;
+                    u16Count = 0;
+                    u8CRC   = 0;
+                }
+                break;
+            }
+            default:
+            {
+                //yes, go to the reception of information
+                u8State = GET_SYNC_STATE;
+                break;
+            }
+        }
+    }
+    
+    //if (SCON0_TI == 1)                        // Check if transmit flag is set
+    if(SCON0_bit.TI0)
+    {
+        //SCON0_TI = 0;                          // Clear interrupt flag
+        SCON0_bit.TI0 = 0;
+        //SBUF0 = Byte;                 // Transmit to Hyperterminal
+    }
 }
 
 unsigned char TCM_Check_Message_Flag(void)
@@ -268,9 +265,9 @@ unsigned char TCM_Check_Message_Flag(void)
 
 void TCM_Clear_Message_Flag(void)
 {
-	IE_EA = 0;
+	IE_bit.EA = 0;
 	u8MSGReceive = 0;
-	IE_EA = 1;
+	IE_bit.EA = 1;
 }
 
 unsigned char* TCM_Get_Message_Data(unsigned char Index)

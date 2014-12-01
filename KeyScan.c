@@ -1,12 +1,4 @@
-/*
- * KeyScan.c
- *
- *  Created on: 2014-5-7
- *      Author: zero
- */
-
-#include <compiler_defs.h>
-#include <SI_C8051F850_Register_Enums.h>                // SFR declarations
+#include "ioC8051F850.h"
 #include "KeyScan.h"
 
 unsigned char w_KB_Time = 0;
@@ -16,8 +8,7 @@ unsigned char Time_Flag = 0;
 #define C_HOLD_TIME 200//5ms interrupt, 200*5 = 1000ms
 #define C_MAX_TIME  250 //
 
-
-SBIT(KEY1, SFR_P0, 2);                   // P0.2 KEY1
+#define KEY1  P0_bit.P00
 
 unsigned char KB_Encoder(void)
 {
